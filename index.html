@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-27761834-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+     
+      gtag('config', 'UA-27761834-1');
+    </script>
+
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+    />
+    <title>City of Austin Homelessness Dashboard</title>
+    <script
+      type="text/javascript"
+      src="https://public.tableau.com/javascripts/api/tableau-2.min.js"
+    ></script>
+    <script type="text/javascript" src="assets/vizList.js"></script>
+    <script type="text/javascript" src="assets/disclaimer.js"></script>
+    <script>
+      function initializeViz() {
+        // gets lists of urls that we want on the page and their associated html ids from vizList
+        // An object that contains options specifying how to embed the viz
+        var options = {
+          height: "480px",
+          width: "100%",
+        };
+
+        for (const [key, viz] of Object.entries(vizList)) {
+          // console.log(`${key}: ${viz}`);
+          // put widgets in their associated html element
+          let divId = `section-${viz.section}-layer-${viz.layer}`;
+          let url = viz.url;
+          let vizDiv = document.getElementById(divId);
+          let = new tableau.Viz(vizDiv, url, options);
+          // add data attributes for tooltips so they can be referenced later
+          let tabId = `section-${viz.section}-layer-${viz.layer}-tab`;
+          let vizTab = document.getElementById(tabId);
+          vizTab.setAttribute("data-section", viz.section);
+          vizTab.setAttribute("data-layer", viz.layer);
+        }
+      }
+      function initializeTooltips() {
+        // top rail tooltips
+        $(function () {
+          $('[data-toggle="tooltip"]').tooltip({
+            trigger: "hover focus click",
+          });
+          var myDefaultWhiteList = $.fn.tooltip.Constructor.Default.whiteList
+          myDefaultWhiteList.ol = ['type']
+        });
+
+        // conditional tooltips for graphs
+        $('[data-toggle="viz-tooltip"]').tooltip({
+          trigger: "hover focus click",
+        });
+      }
+
+      // for tooltip toggle
+      // on click navbar element, run a function
+      // the function checks which id is active of that set
+      // it returns display: flex; for that associated tooltip (the rest are hidden)
+      // could also be used via a mutation observer
+
+      // or: template literal as expression?
+      // title of tooltip is based on a conditional expression
+      // spoiler alert: this is what i did, but the other options are other potential approaches (see bottom script imports)
+    </script>
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    >
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+
+  <body onload="initializeViz();initializeTooltips();">
+    <div>
+      <div class="coa-heading">
+        <h1 class="text-center">
+          Austin Homelessness Dashboard
+        </h1>
+      </div>
+      <div id="accordion">
+        <div class="card no-border">
+          <div class="card-banner" id="headingOne">
+            <div class="container py-2">
+              <div>
+                <span class="font-weight-bold">Disclaimer:</span> this dashboard contains partial data only. <a href="#collapseOne" data-toggle="collapse" aria-expanded="false" aria-controls="collapseOne">Read about the data discrepancies<span class="plus-sign icon-link"> +</span><span class="minus-sign icon-link"> -</span></a>
+              </div>
+            </div>
+          </div>
+          <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+            <div class="card-body container">
+              <div>
+                This dashboard only represents data gathered by certain members of the Continuum of Care. This dashboard does not include:
+                <ul>
+                  <li> Data from organizations whose collection methods are incompatible with the larger group </li>
+                  <li> Data gathered outside the Continuum of Care. </li>
+                  <li> Data on people experiencing homelessness, who choose not to seek services from the CoC. </li>
+                </ul>
+              </div>
+
+              <p>Because of the nature of homelessness case work, data entry can be incomplete or imperfect, and sometimes data changes after it is reported. The data featured in this dashboard is a snapshot of the issue of homelessness in Austin, but it is not comprehensive. </p>
+
+              <p>The Continuum of Care is currently analyzing 2019 data, and there are some metrics that still need to be updated. Data visualized in the dashboard will change as more current data becomes available. </p>
+
+              <a href="#collapseOne" data-toggle="collapse" aria-expanded="false" aria-controls="collapseOne">Close this window.</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="card no-border">
+        <div class="card-banner">
+          <div class="container top-or-border py-2">
+          Learn helpful homelessness terminology. <a href="http://austintexas.gov/department/homelessness-glossary">
+                View Glossary<i class="material-icons open-new-icon">open_in_new</i>
+              </a>
+          </div>
+        </div>
+      </div>
+      </div>
+      </div>
+      <div class="dashboard-information container d-flex flex-row"> 
+        <div>
+          <img
+            src="./assets/images/coa-seal.svg"
+            width="51"
+            height="51"
+            class="d-inline-block align-top"
+            alt="City of Austin Seal"
+          />
+        </div>
+        <div>
+          <p>
+            This dashboard is an informational resource on the issue of homelessness in Austin. The data visualizations featured here are created by the City of Austin. The data is gathered by Austin and Travis County’s Continuum of Care, led by the Ending Community Homelessness Coalition (ECHO).
+          </p>
+        </div>
+      </div>
+      <div class="container">
+        <div class="row mt-4">
+          <div class="col-lg">
+            <div class="card coa-metric-card">
+              <div>
+                <span
+                  data-toggle="tooltip"
+                  data-html="true"
+                  data-placement="bottom"
+                  title="<p class='text-left'>
+                    This count includes anyone who:
+                    
+                    <ol type='A'>
+                      <li>Hasn’t received homelessness services in the last 2 years, including those who have previously been homeless or are experiencing homelessness for the first time.</li>
+                    
+                      <li>Anyone who is seeking service for the first time in Austin’s Continuum of Care, though they have received services elsewhere. </li>
+                    </ol>
+                  </p>"
+                  class="info-icon float-right mr-1"
+                  aria-expanded="false"
+                  >
+                  <i class="material-icons icon-20 icon-blue" title="More information">
+                    info
+                  </i>
+                </span>
+
+                <div class="pb-2 card-body">
+                  <div class="row">
+                    <!-- VALUE -->
+                    <span><h2 class="total">3,559</h2></span>
+                  </div>
+
+                  <div class="text-left d-flex flex-row">
+                    <img src="assets/images/person.svg" alt="Person shaped icon" />
+                    <div class="d-flex flex-column ml-2">
+                      <!-- METRIC -->
+                      <h3 class="mb-0">
+                        Newly Homeless
+                      </h3>
+                      <!-- YEAR -->
+                      <h3 class="text-muted">
+                        in <span class="year">2019</span>
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+                <div class="bg-white card-footer">
+                  <div
+                    class="text-left widget-footer-icon d-flex flex-row card-bottom"
+                  >
+                    <span class="trend-icon d-flex align-items-center">
+                      <img src="/assets/images/caret-up.svg" alt="arrow up icon" />
+                    </span>
+                    <div
+                      class="text-muted text-wrap pt-1 pr-1 widget-footer-text ml-2"
+                    >
+                      Up by <span class="change">326</span> in the last year
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg">
+            <div class="card coa-metric-card">
+              <div>
+                <span
+                  data-toggle="tooltip"
+                  data-html="true"
+                  data-placement="bottom"
+                  title="
+                  <div class='text-left'>
+                    <p>
+                      Anyone who enters into Safe Haven, Emergency Shelter or Transitional Housing during the fiscal year is included in this count.
+                    </p>
+                  </div>"
+                  class="info-icon float-right mr-1"
+                  aria-expanded="false"
+                  >
+                  <i class="material-icons icon-20 icon-blue" title="More information">
+                    info
+                  </i>
+                </span>
+                <div class="pb-2 card-body">
+                  <div class="row">
+                    <!-- VALUE -->
+                    <span><h2 class="total">4,704</h2></span>
+                  </div>
+                  <div class="text-left d-flex flex-row">
+                    <img src="/assets/images/crane.svg" alt="Crane shaped icon"/>
+
+                    <div class="d-flex flex-column ml-2">
+                      <!-- METRIC -->
+                      <h3 class="mb-0">
+                        People Sheltered
+                      </h3>
+                      <!-- YEAR -->
+                      <h3 class="text-muted">
+                        in <span class="year">2019</span>
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+                <div class="bg-white card-footer">
+                  <div
+                    class="text-left widget-footer-icon d-flex flex-row card-bottom"
+                  >
+                    <span class="trend-icon d-flex align-items-center">
+                      <img src="/assets/images/caret-up.svg" alt="arrow up icon" />
+                    </span>
+                    <div
+                      class="text-muted text-wrap pt-1 pr-1 widget-footer-text ml-2"
+                    >
+                      Up by <span class="change equalize">186</span> in the last year
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg">
+            <div class="card coa-metric-card">
+              <div>
+                <span
+                  data-toggle="tooltip"
+                  data-html="true"
+                  data-placement="bottom"
+                  title="
+                    <div class='text-left'>
+                      <p>
+                        This count includes individuals that:
+                      </p>
+                      <ul>
+                        <li>Have been housed for 6 months or more in a Permanent Supportive Housing or Other Permanent Housing program</li>
+                        <li>Are newly transitioned to stable housing upon leaving shelter, Transitional Housing, or any permanent housing program</li>
+                      </ul>
+                      <p>
+                      This number does not account for those who manage to get housed in non-Continuum of Care housing. 
+                      </p>
+                    </div>"
+                  class="info-icon float-right mr-1"
+                  aria-expanded="false"
+                  >
+                  <i class="material-icons icon-20 icon-blue" title="More information">
+                    info
+                  </i>
+                </span>
+                <div class="pb-2 card-body">
+                  <div class="row">
+                    <!-- VALUE -->
+                    <span><h2 class="total">2,485</h2></span>
+                  </div>
+                  <div class="text-left d-flex flex-row">
+                    <img src="/assets/images/house.svg" alt="House shaped icon" />
+                    <div class="d-flex flex-column ml-2">
+                      <!--OF METRIC-->
+                      <h3 class="mb-0">
+                        People Housed
+                      </h3>
+                      <!-- YEAR -->
+                      <h3 class="text-muted">
+                        in <span class="year">2019</span>
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+                <div class="bg-white card-footer">
+                  <div
+                    class="text-left widget-footer-icon d-flex flex-row card-bottom"
+                  >
+                    <span class="trend-icon d-flex align-items-center">
+                      <img src="/assets/images/caret-up.svg" alt="arrow up icon" />
+                    </span>
+                    <div
+                      class="text-muted text-wrap pt-1 pr-1 widget-footer-text ml-2"
+                    >
+                      Up by <span class="change">205</span> in the last year
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg">
+            <div class="card coa-metric-card">
+              <div>
+                <span
+                  data-toggle="tooltip"
+                  data-html="true"
+                  data-placement="bottom"
+                  title="<p class='text-left'>
+                    This is  the total number of beds devoted to housing in the Austin and Travis County CoC. Housing programs included in this number are Permanent Supportive Housing, Permanent Housing and Rapid Re-Housing.
+                    </p>"
+                  class="info-icon float-right mr-1"
+                  aria-expanded="false"
+                  >
+                  <i class="material-icons icon-20 icon-blue" title="More information">
+                    info
+                  </i>
+                </span>
+                <div class="pb-2 card-body">
+                  <div class="row">
+                    <!-- VALUE -->
+                    <span><h2 class="total">2,000</h2></span>
+                  </div>
+                  <div class="text-left d-flex flex-row">
+                    <img src="/assets/images/apartments.svg" alt="Apartment building shaped icon" />
+
+                    <div class="d-flex flex-column ml-2">
+                      <!--METRIC-->
+                      <h3 class="mb-0">
+                        Beds for Housing
+                      </h3>
+                      <!-- YEAR -->
+                      <h3 class="text-muted">
+                        in <span class="year">2019</span>
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+                <div class="bg-white card-footer">
+                  <div
+                    class="text-left widget-footer-icon d-flex flex-row card-bottom"
+                  >
+                    <span class="trend-icon d-flex align-items-center">
+                      <img src="/assets/images/caret-up.svg" alt="arrow up icon" />
+                    </span>
+                    <div
+                      class="text-muted text-wrap pt-1 pr-1 widget-footer-text ml-2"
+                    >
+                      Up by <span class="change">354</span> in the last year
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="container d-flex flex-column">
+        <div class="row">
+          <!-- Newly Homeless -->
+          <div class="col-md viz-widget card">
+            <div class="row">
+              <h2 class="col pt-2">Newly Homeless</h2>
+              <span
+                id="section-1-tooltip"
+                class="info-icon float-right mr-1 col-sm-1 d-flex justify-content-end"
+                data-toggle="viz-tooltip"
+                data-html="true"
+                data-placement="bottom"
+                data-title="placeholder for 1st tooltip, if you see me its bad"
+                aria-expanded="false"
+                style="display: none;"
+                >
+                <i class="material-icons icon-20 icon-blue" title="More information">
+                  info
+                </i>
+              </span>
+            </div>
+            <ul
+              class="nav nav-pills mb-3"
+              id="section-1-pills-tab"
+              role="tablist"
+            >
+              <li class="nav-item">
+                <a
+                  class="nav-link active"
+                  id="section-1-layer-1-tab"
+                  data-toggle="pill"
+                  href="#section-1-layer-1"
+                  role="tab"
+                  aria-controls="section-1-layer-1"
+                  aria-selected="true"
+                  >Individuals</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  id="section-1-layer-2-tab"
+                  data-toggle="pill"
+                  href="#section-1-layer-2"
+                  role="tab"
+                  aria-controls="section-1-layer-2"
+                  aria-selected="false"
+                  >Demographics</a
+                >
+              </li>
+            </ul>
+            <div class="tab-content" id="pills-tabContent">
+              <div
+                class="tab-pane fade show active"
+                id="section-1-layer-1"
+                role="tabpanel"
+                aria-labelledby="section-1-layer-1-tab"
+              ></div>
+              <div
+                class="tab-pane fade"
+                id="section-1-layer-2"
+                role="tabpanel"
+                aria-labelledby="section-1-layer-2-tab"
+              ></div>
+            </div>
+          </div>
+          <!-- Shelter -->
+          <div class="col-md viz-widget card">
+            <div class="row">
+              <h2 class="col pt-2">Shelter</h2>
+              <span
+                id="section-2-tooltip"
+                class="info-icon float-right mr-1 col-sm-1 d-flex justify-content-end"
+                data-toggle="viz-tooltip"
+                data-html="true"
+                data-placement="bottom"
+                data-title="placeholder for 1st tooltip, if you see me its bad"
+                aria-expanded="false"
+                style="display: none;"
+                >
+                <i class="material-icons icon-20 icon-blue" title="More information">
+                  info
+                </i>
+              </span>
+            </div>
+            <ul
+              class="nav nav-pills mb-3"
+              id="section-2-pills-tab"
+              role="tablist"
+            >
+              <li class="nav-item">
+                <a
+                  class="nav-link active"
+                  id="section-2-layer-1-tab"
+                  data-toggle="pill"
+                  href="#section-2-layer-1"
+                  role="tab"
+                  aria-controls="section-2-layer-1"
+                  aria-selected="true"
+                  >Beds</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  id="section-2-layer-2-tab"
+                  data-toggle="pill"
+                  href="#section-2-layer-2"
+                  role="tab"
+                  aria-controls="section-2-layer-2"
+                  aria-selected="false"
+                  >Individuals</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  id="section-2-layer-3-tab"
+                  data-toggle="pill"
+                  href="#section-2-layer-3"
+                  role="tab"
+                  aria-controls="section-2-layer-3"
+                  aria-selected="false"
+                  >Demographics</a
+                >
+              </li>
+            </ul>
+            <div class="tab-content" id="pills-tabContent">
+              <div
+                class="tab-pane fade show active"
+                id="section-2-layer-1"
+                role="tabpanel"
+                aria-labelledby="section-2-layer-1-tab"
+              ></div>
+              <div
+                class="tab-pane fade"
+                id="section-2-layer-2"
+                role="tabpanel"
+                aria-labelledby="section-2-layer-2-tab"
+              ></div>
+              <div
+                class="tab-pane fade"
+                id="section-2-layer-3"
+                role="tabpanel"
+                aria-labelledby="section-2-layer-3-tab"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <!-- Housing -->
+          <div class="col-md viz-widget card">
+            <div class="row">
+              <h2 class="col pt-2">Housing</h2>
+              <span
+                id="section-3-tooltip"
+                class="info-icon float-right mr-1 col-sm-1 d-flex justify-content-end"
+                data-toggle="viz-tooltip"
+                data-html="true"
+                data-placement="bottom"
+                data-title="placeholder for 1st tooltip, if you see me its bad"
+                aria-expanded="false"
+                style="display: none;"
+                >
+                <i class="material-icons icon-20 icon-blue" title="More information">
+                  info
+                </i>
+              </span>
+            </div>
+
+            <ul
+              class="nav nav-pills mb-3"
+              id="section-3-pills-tab"
+              role="tablist"
+            >
+              <li class="nav-item">
+                <a
+                  class="nav-link active"
+                  id="section-3-layer-1-tab"
+                  data-section="3"
+                  data-layer="1"
+                  data-toggle="pill"
+                  href="#section-3-layer-1"
+                  role="tab"
+                  aria-controls="section-3-layer-1"
+                  aria-selected="true"
+                  >Beds</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  id="section-3-layer-2-tab"
+                  data-toggle="pill"
+                  href="#section-3-layer-2"
+                  role="tab"
+                  aria-controls="section-3-layer-2"
+                  aria-selected="false"
+                  >Individuals</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  id="section-3-layer-3-tab"
+                  data-toggle="pill"
+                  href="#section-3-layer-3"
+                  role="tab"
+                  aria-controls="section-3-layer-3"
+                  aria-selected="false"
+                  >Demographics</a
+                >
+              </li>
+            </ul>
+            <div class="tab-content" id="pills-tabContent">
+              <div
+                class="tab-pane fade show active"
+                id="section-3-layer-1"
+                role="tabpanel"
+                aria-labelledby="section-3-layer-1-tab"
+              ></div>
+              <div
+                class="tab-pane fade"
+                id="section-3-layer-2"
+                role="tabpanel"
+                aria-labelledby="section-3-layer-2-tab"
+              ></div>
+              <div
+                class="tab-pane fade"
+                id="section-3-layer-3"
+                role="tabpanel"
+                aria-labelledby="section-3-layer-3-tab"
+              ></div>
+            </div>
+          </div>
+          <!-- Returns to Homeless -->
+          <div class="col-md viz-widget card">
+            <div class="row">
+              <h2 class="col pt-2">Returns to Homeless</h2>
+              <span
+                id="section-4-tooltip"
+                class="info-icon float-right mr-1 col-sm-1 d-flex justify-content-end"
+                data-toggle="viz-tooltip"
+                data-html="true"
+                data-placement="bottom"
+                data-title="placeholder for 1st tooltip, if you see me its bad"
+                aria-expanded="false"
+                style="display: none;"
+                >
+                <i class="material-icons icon-20 icon-blue" title="More information">
+                  info
+                </i>
+              </span>
+            </div>
+            <ul
+              class="nav nav-pills mb-3"
+              id="section-4-pills-tab"
+              role="tablist"
+            >
+              <li class="nav-item">
+                <a
+                  class="nav-link active"
+                  id="section-4-layer-1-tab"
+                  data-toggle="pill"
+                  href="#section-4-layer-1"
+                  role="tab"
+                  aria-controls="section-4-layer-1"
+                  aria-selected="true"
+                  >Individuals</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  id="section-4-layer-2-tab"
+                  data-toggle="pill"
+                  href="#section-4-layer-2"
+                  role="tab"
+                  aria-controls="section-4-layer-2"
+                  aria-selected="false"
+                  >Demographics</a
+                >
+              </li>
+            </ul>
+            <div class="tab-content" id="pills-tabContent">
+              <div
+                class="tab-pane fade show active"
+                id="section-4-layer-1"
+                role="tabpanel"
+                aria-labelledby="section-4-layer-1-tab"
+              ></div>
+              <div
+                class="tab-pane fade"
+                id="section-4-layer-2"
+                role="tabpanel"
+                aria-labelledby="section-4-layer-2-tab"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="container py-5">
+      <div class="row">
+        <div class="col-md-4">
+          <a
+            type="button"
+            href="http://austintexas.gov/homelessness/"
+            class="btn btn-primary btn-link btn-lg coa-big-ol-button coa-darkblue text-white"
+            target="_blank"
+            >City Homelessness Response<i class="fa fa-arrow-right ml-1"></i
+          ></a>
+        </div>
+        <div class="col-md-4">
+          <a
+            type="button"
+            href="http://austintexas.gov/department/homelessness-glossary"
+            class="btn btn-primary btn-link btn-lg coa-big-ol-button coa-medblue text-white"
+            target="_blank"
+            >Glossary<i class="fa fa-arrow-right ml-1"></i
+          ></a>
+        </div>
+        <div class="col-md-4">
+          <a
+            type="button"
+            href="https://data.austintexas.gov/browse?q=homeless&sortBy=relevance"
+            class="btn btn-primary btn-link btn-lg coa-big-ol-button coa-lightblue text-white"
+            target="_blank"
+            >Data<i class="fa fa-arrow-right ml-1"></i
+          ></a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+      integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ"
+      crossorigin="anonymous"
+    />
+    <script>
+      function getActiveContent(sectionNumber) {
+        let activeViz = $(`#section-${sectionNumber}-pills-tab`).find(
+          ".active"
+        );
+        let section = activeViz[0].dataset.section;
+        let layer = activeViz[0].dataset.layer;
+        // match json object by section, layer
+        let tooltipContent = vizList.filter(
+          (viz) => viz.section == section && viz.layer == layer
+        )[0].info;
+        if (tooltipContent !== undefined) {
+          return tooltipContent;
+        }
+      }
+      function setTooltipContent(sectionNumber) {
+        $(`#section-${sectionNumber}-tooltip`).hover(function () {
+          this.dataset.originalTitle = `${getActiveContent(sectionNumber)}`;
+        });
+      }
+
+      $(setTooltipContent(1));
+      $(setTooltipContent(2));
+      $(setTooltipContent(3));
+      $(setTooltipContent(4));
+    </script>
+    <script>
+      document.getElementById("data-disclaimer").innerHTML = dataDisclaimer;
+    </script>
+    <script> (function(h,o,t,j,a,r){ h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)}; h._hjSettings={hjid:2002792,hjsv:6}; a=o.getElementsByTagName('head')[0]; r=o.createElement('script');r.async=1; r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv; a.appendChild(r); })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv='); </script> 
+  </body>
+</html>
